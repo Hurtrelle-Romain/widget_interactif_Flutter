@@ -29,6 +29,10 @@ class InteractifPageState extends State<InteractifPage> {
     "Abricot": false,
 };
 
+  DateTime initialDate = DateTime.now();
+
+  int groupValue =1;
+
 
   @override
   void initState() {
@@ -52,97 +56,99 @@ class InteractifPageState extends State<InteractifPage> {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(title: Text(updateAppBarText()),),
-      body: Center(child: Column(
-        children: [
-          TextButton(onPressed: updateAppBar,
+      body: Center(child: SingleChildScrollView(
+        child: Column(
+          children: [
+            TextButton(onPressed: updateAppBar,
               child: Row(
-               children: [
-                 const Icon(Icons.work),
-                 textButtonText()
-               ],
+                children: [
+                  const Icon(Icons.work),
+                  textButtonText()
+                ],
               ),
-            style: TextButton.styleFrom(
-              backgroundColor: Colors.red,
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.red,
+              ),
             ),
-          ),
-          ElevatedButton(
-              onPressed: () {
-                print("yep");
-              },
-              child: const Text("Elevated"),
-            onLongPress: (){
+            ElevatedButton(
+              onPressed: (() =>showDate(context)),
+              child:  Text("$initialDate"),
+              onLongPress: (){
                 print("pey");
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-              elevation: 10,
-              shadowColor: Colors.red,
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                elevation: 10,
+                shadowColor: Colors.red,
+              ),
             ),
-          ),
-          IconButton(
+            IconButton(
               onPressed: setIcon,
               icon: Icon(icon),
-             color: Colors.pink,
-            splashColor: Colors.pinkAccent,
-          ),
-           TextField(
-          obscureText: false,
-            decoration: const InputDecoration(
-              hintText: "Entrez votre prénom",
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(25))
-               ),
-              ),
-            keyboardType: TextInputType.emailAddress,
-             onSubmitted: (newString) {
-            setState(() {
-              prenom = newString;
-                });
-             },
+              color: Colors.pink,
+              splashColor: Colors.pinkAccent,
             ),
-          Text(prenom),
-          TextField(
-            controller: controller,
-            decoration: const InputDecoration(
-              hintText: "Entrez votre nom"),
-            onChanged: ((newValue)  => setState(() => print("Done: $newValue"))),
-          ),
-          Text(controller.text),
-          Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text((switchValue) ? "J'aime les chats" : "Les chats sont démoniaques"),
-              Switch(
-                activeColor: Colors.green,
-                  inactiveTrackColor: Colors.red,
-                  inactiveThumbColor: Colors.blue,
-                  value: switchValue,
-                  onChanged: ((bool) {
-                   setState(() {
-                  switchValue = bool;
+            TextField(
+              obscureText: false,
+              decoration: const InputDecoration(
+                hintText: "Entrez votre prénom",
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(25))
+                ),
+              ),
+              keyboardType: TextInputType.emailAddress,
+              onSubmitted: (newString) {
+                setState(() {
+                  prenom = newString;
                 });
-              })),
-            ],
-          ),
-        Slider(
-            value: sliderValue,
-            min: 0,
-            max: 100,
-            onChanged: ((newValue) {
-              setState(() {
-                sliderValue = newValue;
-              });
-             }),
-          thumbColor: Colors.red,
-          inactiveColor: Colors.brown,
-          activeColor: Colors.yellow,
-         ),
-          Text("Valeur : ${sliderValue.toInt()}"),
-          Checkbox(value: check, onChanged: ((newBool) => setState(() => check = newBool ?? false))),
-          checks(),
-        ],
-      )),
+              },
+            ),
+            Text(prenom),
+            TextField(
+              controller: controller,
+              decoration: const InputDecoration(
+                  hintText: "Entrez votre nom"),
+              onChanged: ((newValue)  => setState(() => print("Done: $newValue"))),
+            ),
+            Text(controller.text),
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text((switchValue) ? "J'aime les chats" : "Les chats sont démoniaques"),
+                Switch(
+                    activeColor: Colors.green,
+                    inactiveTrackColor: Colors.red,
+                    inactiveThumbColor: Colors.blue,
+                    value: switchValue,
+                    onChanged: ((bool) {
+                      setState(() {
+                        switchValue = bool;
+                      });
+                    })),
+              ],
+            ),
+            Slider(
+              value: sliderValue,
+              min: 0,
+              max: 100,
+              onChanged: ((newValue) {
+                setState(() {
+                  sliderValue = newValue;
+                });
+              }),
+              thumbColor: Colors.red,
+              inactiveColor: Colors.brown,
+              activeColor: Colors.yellow,
+            ),
+            Text("Valeur : ${sliderValue.toInt()}"),
+            Checkbox(value: check, onChanged: ((newBool) => setState(() => check = newBool ?? false))),
+            checks(),
+            radios(),
+
+          ],
+        )),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: updateColors,
         child: const Icon(Icons.add),
@@ -193,11 +199,46 @@ class InteractifPageState extends State<InteractifPage> {
             setState(() {
               courses[course] = newValue ?? false;
             });
-          }))
+          }),
+            checkColor: Colors.greenAccent,
+            activeColor: Colors.lightBlue,
+          ),
         ],
       );
       items.add(row);
     });
     return Column(children: items,);
+  }
+  Row radios() {
+    List<Widget> radios = [];
+    for (var i = 0; i<5; i++){
+      Radio r =  Radio(
+        activeColor: Colors.greenAccent,
+          value: i,
+          groupValue: groupValue,
+          onChanged: ((newValue) {
+            setState(() {
+              groupValue = newValue as int;
+            });
+          }));
+      radios.add(r);
+    }
+    return Row(children: radios,);
+  }
+
+   showDate(BuildContext context) {
+    showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(1998),
+      lastDate: DateTime(2090),
+    ).then((value) => {
+      if (value != null) {
+        setState(() {
+          initialDate = value;
+        }
+        )
+      }
+    });
   }
 }
